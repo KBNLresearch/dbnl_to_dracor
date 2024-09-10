@@ -1,0 +1,17 @@
+<!doctype html>
+<title>DBNL to DACOR tool</title>
+<nav>
+  <h1>DBNL2DRACOR</h1>
+  <ul>
+    <li><a href="/">Restart</a>
+  </ul>
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>
