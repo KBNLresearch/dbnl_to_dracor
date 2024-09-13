@@ -24,13 +24,22 @@ default_params = {'pb' : False,
                   'xptr' : False,   
                   'note': False}
 
-def parse_xml(url, params=default_params):
+default_url = 'https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'
+
+def parse_xml(url=default_url, params=default_params):
     req = requests.get(url)
     data = etree.fromstring(req.content)
 
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
+
+        for item in data.iter():
+            if item.tag.startswith('pb'):
+                print(item.tag, item.attrib)
+            else:
+                print(item.tag, item.attrib)
+                
 
     if params.get('hi'):
         '''
@@ -67,3 +76,9 @@ def hello_world():
         parse_xml(to_parse)
 
         return render_template('index.html')
+
+
+if __name__ == '__main__':
+    p = default_params
+    p['pb'] = True
+    parse_xml()
