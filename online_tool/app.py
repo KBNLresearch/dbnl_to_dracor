@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Flask, render_template, request
 from markupsafe import escape
 from urllib.parse import urlparse
@@ -28,18 +30,26 @@ default_url = 'https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'
 
 def parse_xml(url=default_url, params=default_params):
     req = requests.get(url)
-    data = etree.fromstring(req.content)
+    data = req.content
+    xml_data = etree.fromstring(data)
 
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
+        nodes = []
 
-        for item in data.iter():
-            if item.tag.startswith('pb'):
-                print(item.tag, item.attrib)
+        for item in xml_data.iter():
+            if not str(item.tag).startswith('pb'):
+                nodes.append(item)
+                pass
             else:
-                print(item.tag, item.attrib)
-                
+                print(item.tag)
+
+        xml=b''
+        for node in nodes:
+            xml += etree.tostring(node)
+        xml_data = etree.fromstring(xml)
+        
 
     if params.get('hi'):
         '''
@@ -52,6 +62,7 @@ def parse_xml(url=default_url, params=default_params):
     if params.get('xptr'):
         ''' 
         <xptr> elementen inclusief attributen ('<xptr.*?>')'''
+
 
 
     return ''

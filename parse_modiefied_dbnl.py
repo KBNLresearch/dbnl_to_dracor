@@ -70,7 +70,6 @@ def pre_remove(
     xml_buffer.seek(0)
 
 
-
     import xml.etree.ElementTree as ET
 
     from copy import copy
