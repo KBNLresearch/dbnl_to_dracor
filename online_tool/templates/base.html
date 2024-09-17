@@ -9,43 +9,6 @@
 </nav>
 
 
-
-    <h2>CodeMirror XML Editor</h2>
-    <form id="xmlForm">
-        <textarea id="xmlEditor"></textarea>
-        <button type="submit">Submit XML</button>
-    </form>
-    <h3>Processed Output:</h3>
-    <div id="output"></div>
-
-    <script>
-        // Initialize CodeMirror on the textarea
-        const editor = CodeMirror.fromTextArea(document.getElementById('xmlEditor'), {
-            lineNumbers: true,
-            mode: 'xml',
-            theme: 'default'
-        });
-
-        // Handle form submission
-        document.getElementById('xmlForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const xmlContent = editor.getValue();
-
-            // Send the XML content to the Flask backend
-            fetch('/process_xml', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ xml: xmlContent })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('output').innerText = data.output;
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    </script>
-
-
 <section class="content">
   <header>
     {% block header %}{% endblock %}
