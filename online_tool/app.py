@@ -83,8 +83,8 @@ def hello_world():
 
         xml_id = escape(url.query.split('=')[-1])
         to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
-        print(to_parse)
         xml_data = parse_xml(to_parse)
+        print(xml_data)
 
         return render_template('index.html', xml_data = xml_data)
 
