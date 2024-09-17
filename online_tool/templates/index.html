@@ -4,6 +4,7 @@
   <h1>!!</h1>
 {% endblock %}
 
+{% block content %}
     <h2>CodeMirror XML Editor</h2>
     <form id="xmlForm">
         <textarea id="xmlEditor"></textarea>
@@ -45,7 +46,6 @@
         });
     </script>
 
-{% block content %}
   <form method="post">
     <label for="url">Link to DBNL input XML</label>
     <input type="text" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input>
