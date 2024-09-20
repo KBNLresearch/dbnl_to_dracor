@@ -33,32 +33,7 @@ def parse_xml(url=default_url, params=default_params):
     req = requests.get(url)
     parser = etree.XMLParser(remove_blank_text=True)
     data = req.content
-
-    #print(data.decode('utf-8'))
-    formatted_xml = ''
-
-    xml_data = etree.fromstring(data,
-                                parser=parser)
-
-    data = data.decode('utf-8')
-    ndata = ''
-
-    for l in data.split('\r'):
-        if not l.lstrip().startswith('<'):
-            ndata += ' ' + l.strip()
-        else:
-            if ndata.endswith('>'):
-                ndata += '\n' + l.strip()
-            else:
-                ndata += l.strip()
-
-    xml = etree.fromstring(ndata.encode())
-    formatted_xml = etree.tostring(xml,
-                                   pretty_print = True,
-                                   encoding = 'utf-8').decode()
-
-
-    xml = etree.fromstring(formatted_xml)
+    xml = etree.fromstring(data, parser=parser)
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
@@ -121,4 +96,4 @@ if __name__ == '__main__':
     p['hi'] = True
     p['pb'] = True
     print(parse_xml(params=p))
-    #app.run()
+    app.run()
