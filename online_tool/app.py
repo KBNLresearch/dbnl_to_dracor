@@ -56,10 +56,14 @@ def parse_xml(url=default_url, params=default_params):
     formatted_xml = etree.tostring(xml,
                                    pretty_print = True,
                                    encoding = 'utf-8').decode()
+
+
+    xml = etree.fromstring(formatted_xml)
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
-        pass
+        for node in xml.xpath("//pb"):
+            node.getparent().remove(node)
 
     if params.get('hi'):
         '''
@@ -76,6 +80,9 @@ def parse_xml(url=default_url, params=default_params):
         <xptr> elementen inclusief attributen ('<xptr.*?>')'''
         pass
 
+    formatted_xml = etree.tostring(xml,
+                                   pretty_print = True,
+                                   encoding = 'utf-8').decode()
 
     return formatted_xml
 

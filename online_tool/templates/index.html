@@ -32,36 +32,19 @@
         <textarea id="xmlEditor"></textarea>
     </form>
     <script>
-        // Load the initial XML content from the Flask server
         const initialXML = `{{ xml_data | safe }}`;
-
-        // Initialize CodeMirror on the textarea
         const editor = CodeMirror.fromTextArea(document.getElementById('xmlEditor'), {
             theme: 'default', 
             readOnly: true,
-            cursorBlinkRate: -1
+            cursorBlinkRate: -1,
+            mode: "xml",
+            matchTags: {bothTags: true},
+            styleActiveLine: true,
+            lineNumbers: true,
+            indentWithTabs: true,
+            indentUnit: 4,
         });
-
-        // Set the editor's content to the XML fetched from the server
         editor.setValue(initialXML);
-
-        // Handle form submission
-        document.getElementById('xmlForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const xmlContent = editor.getValue();
-
-            // Send the XML content to the Flask backend
-            fetch('/process_xml', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ xml: xmlContent })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('output').innerText = data.output;
-            })
-            .catch(error => console.error('Error:', error));
-        });
     </script>
 
   {% endif %}
