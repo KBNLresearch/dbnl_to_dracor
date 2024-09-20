@@ -62,13 +62,12 @@ def parse_xml(url=default_url, params=default_params):
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
-        for node in xml.xpath("//pb"):
-            node.getparent().remove(node)
+        etree.strip_tags(xml,'pb')
 
     if params.get('hi'):
         '''
         <hi> elementen inclusief attributen, exclusief inhoud ('<hi.*?>' + '<hi.*?\n.*?>' + '</hi>')'''
-        pass
+        etree.strip_tags(xml,'hi')
 
     if params.get('rend'):
         '''
@@ -119,6 +118,7 @@ def index():
 
 if __name__ == '__main__':
     p = default_params
+    p['hi'] = True
     p['pb'] = True
-    print(parse_xml())
-    app.run()
+    print(parse_xml(params=p))
+    #app.run()
