@@ -34,24 +34,41 @@ def parse_xml(url=default_url, params=default_params):
     parser = etree.XMLParser(remove_blank_text=True)
     data = req.content
     xml = etree.fromstring(data, parser=parser)
+    print(params)
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
-        etree.strip_tags(xml,'pb')
+        to_remove = set()
+        for i in xml.iter():
+            if str(i.tag).startswith('pb'):
+                to_remove.add(str(i.tag))
+
+        for elm in to_remove:
+            etree.strip_tags(xml, elm)
 
     if params.get('hi'):
         '''
         <hi> elementen inclusief attributen, exclusief inhoud ('<hi.*?>' + '<hi.*?\n.*?>' + '</hi>')'''
-        etree.strip_tags(xml,'hi')
+        to_remove = set()
+        for i in xml.iter():
+            if str(i.tag).startswith('hi'):
+                to_remove.add(str(i.tag))
+
+        for elm in to_remove:
+            etree.strip_tags(xml, elm)
 
     if params.get('rend'):
         '''
         "rend" attributen inclusief waardes (' rend=".*?"')'''
+        #3xml.attrib.pop('rend')
+        #xml.strip_attributes("rend")
         pass
 
     if params.get('xptr'):
         ''' 
         <xptr> elementen inclusief attributen ('<xptr.*?>')'''
+        #xml.attrib.pop('xptr')
+        #xml.strip_attributes("xptr")
         pass
 
     formatted_xml = etree.tostring(xml,
@@ -62,38 +79,34 @@ def parse_xml(url=default_url, params=default_params):
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    opdict = default_params.copy()
     if request.method == 'GET':
-        return render_template('index.html')
+        return render_template('index.html', opdict=opdict)
 
     if request.method == 'POST':
         todo = request.form.get('url')
         operation = request.form.getlist('op')
 
-        opdict = default_params.copy()
         for op in operation:
             opdict[op] = True
 
         url = urlparse(todo)
 
         if url.hostname is None:
-            return render_template('index.html')
+            return render_template('index.html', opdict=opdict)
         if not '=' in url.query:
-            return render_template('index.html')
+            return render_template('index.html', opdict=opdict)
 
         try:
             xml_id = escape(url.query.split('=')[-1])
         except:
-            return render_template('index.html')
+            return render_template('index.html', opdict=opdict)
 
         to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
         xml_data = parse_xml(to_parse, opdict)
-        print(opdict)
-
-        return render_template('index.html', xml_data = xml_data)
+        return render_template('index.html',
+                               xml_data=xml_data,
+                               opdict=opdict)
 
 if __name__ == '__main__':
-    p = default_params
-    p['hi'] = True
-    p['pb'] = True
-    print(parse_xml(params=p))
     app.run()
