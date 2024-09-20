@@ -34,6 +34,10 @@ def parse_xml(url=default_url, params=default_params):
     parser = etree.XMLParser(remove_blank_text=True)
     data = req.content
     xml = etree.fromstring(data, parser=parser)
+    formatted_xml = etree.tostring(xml,
+                                   pretty_print = True,
+                                   encoding = 'utf-8').decode()
+    stats = len(formatted_xml)
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
@@ -92,12 +96,13 @@ def parse_xml(url=default_url, params=default_params):
     formatted_xml = etree.tostring(xml,
                                    pretty_print = True,
                                    encoding = 'utf-8').decode()
-
-    return formatted_xml
+    stats1 = len(formatted_xml)
+    return formatted_xml, stats - stats1
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
     opdict = default_params.copy()
+    opdict['stats'] = 0
     if request.method == 'GET':
         return render_template('index.html', opdict=opdict)
 
@@ -121,7 +126,8 @@ def index():
             return render_template('index.html', opdict=opdict)
 
         to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
-        xml_data = parse_xml(to_parse, opdict)
+        xml_data, stats = parse_xml(to_parse, opdict)
+        opdict['stats'] = stats
         return render_template('index.html',
                                xml_data=xml_data,
                                opdict=opdict)
