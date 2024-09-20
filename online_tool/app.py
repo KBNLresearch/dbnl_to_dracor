@@ -80,12 +80,18 @@ def parse_xml(url=default_url, params=default_params):
     return formatted_xml
 
 @app.route("/", methods=['GET', 'POST'])
-def hello_world():
+def index():
     if request.method == 'GET':
         return render_template('index.html')
 
     if request.method == 'POST':
         todo = request.form.get('url')
+        operation = request.form.getlist('op')
+
+        opdict = default_params.copy()
+        for op in operation:
+            opdict[op] = True
+
         url = urlparse(todo)
 
         if url.hostname is None:
@@ -99,7 +105,8 @@ def hello_world():
             return render_template('index.html')
 
         to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
-        xml_data = parse_xml(to_parse)
+        xml_data = parse_xml(to_parse, opdict)
+        print(opdict)
 
         return render_template('index.html', xml_data = xml_data)
 
