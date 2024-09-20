@@ -34,7 +34,6 @@ def parse_xml(url=default_url, params=default_params):
     parser = etree.XMLParser(remove_blank_text=True)
     data = req.content
     xml = etree.fromstring(data, parser=parser)
-    print(params)
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
@@ -60,16 +59,35 @@ def parse_xml(url=default_url, params=default_params):
     if params.get('rend'):
         '''
         "rend" attributen inclusief waardes (' rend=".*?"')'''
-        #3xml.attrib.pop('rend')
-        #xml.strip_attributes("rend")
-        pass
+        for elem in xml.iter():
+            if 'rend' in elem.attrib:
+                del elem.attrib['rend']
 
     if params.get('xptr'):
         ''' 
         <xptr> elementen inclusief attributen ('<xptr.*?>')'''
-        #xml.attrib.pop('xptr')
-        #xml.strip_attributes("xptr")
-        pass
+        to_remove = set()
+        for i in xml.iter():
+            if str(i.tag).startswith('xptr'):
+                to_remove.add(str(i.tag))
+
+        for elm in to_remove:
+            etree.strip_tags(xml, elm)
+
+
+    if params.get('note'):
+        to_remove = set()
+        for i in xml.iter():
+            if str(i.tag).startswith('note'):
+                to_remove.add(str(i.tag))
+
+        for elm in to_remove:
+            etree.strip_tags(xml, elm)
+
+        for elem in xml.iter():
+            if 'note' in elem.attrib:
+                del elem.attrib['note']
+
 
     formatted_xml = etree.tostring(xml,
                                    pretty_print = True,
