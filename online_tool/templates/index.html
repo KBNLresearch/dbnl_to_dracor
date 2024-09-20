@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>!!</h1>
 {% endblock %}
 
 {% block content %}
  <form method="post">
 
-    <label for="url">Link to DBNL input XML</label>
-    <input type="text" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input><br>
+     <label for="url"><b>DBNL input XML: </b></label>
+    <input type="text" size="60" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input><br>
 
     <input type="checkbox" id="pb" name="pb" value="pb">
     <label for="pb"> "pb" elementen inclusief attributen pb.*?</label><br>
@@ -20,13 +19,16 @@
     <label for="rend"> "rend" attributen inclusief waardes (' rend=".*?"')'''</label><br>
 
     <input type="checkbox" id="xptr" name="xptr" value="xptr">
-    <label for="xptr"> elementen inclusief attributen xptr.*?</label><br>
+    <label for="xptr"> elementen inclusief attributen xptr.*?</label><br><br>
 
-    <input type="submit" value="Process XML">
+    <input type="submit" value="Parse XML"><br>
   </form>
 
 
-    <form id="xmlForm">
+
+  {% if xml_data %}
+  
+  <form id="xmlForm">
         <textarea id="xmlEditor"></textarea>
     </form>
     <script>
@@ -35,9 +37,9 @@
 
         // Initialize CodeMirror on the textarea
         const editor = CodeMirror.fromTextArea(document.getElementById('xmlEditor'), {
-            lineNumbers: true,
-            mode: 'xml',
-            theme: 'default'
+            theme: 'default', 
+            readOnly: true,
+            cursorBlinkRate: -1
         });
 
         // Set the editor's content to the XML fetched from the server
@@ -62,6 +64,7 @@
         });
     </script>
 
+  {% endif %}
  
 
 {% endblock %}

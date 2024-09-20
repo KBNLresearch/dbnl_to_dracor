@@ -9,34 +9,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/xml-hint.js"></script>
+
+
+    <!--
+
+
+
+        --!>
+
 
         <style>
         body, html {
-            margin: 0;
-            padding: 0;
             height: 100%;
-            justify-content: center;
-            align-items: center;
+            background-color: rgb(33, 37, 41);
+            color: rgb(255, 255, 255);
         }
         textarea {
             margin-bottom: 10px;
             resize: vertical;
             max-height: auto;
-            min-height: 80px;
+            min-height: 40%;
         }
         .CodeMirror {
             height: 40%;
             width: 70%;
         }
+        .content {
+            background-color: rgb(255, 255, 255);
+            border-radius: 25px;
+            color: rgb(33, 37, 41);
+            border: 2px solid #73AD21;
+            padding: 10px;
+            width: auto;
+            height: auto;
+        }
     </style>
 </head>
 <nav>
-  <h1>DBNL2DRACOR</h1>
-  <ul>
-    <li><a href="/">Restart</a>
-  </ul>
+    <a href='/' style='text-decoration: none; float: left;'>
+    <img src="https://dracor.org/maskable_icon.png" style='float: left; width: 120px; padding: 20px;'>
+  <h1 style='float: left;'>DBNL2DRACOR</h1>
+    </a>
+    <a href='https://www.dbnl.org/' style='text-decoration: none'>
+    <img src="https://www.dbnl.org/images/DBNL-logo-compact-diapositief-RGB.svg" style='float: right; width: 120px; padding: 20px;'>
+    </a>
+
 </nav>
 
+<br style='clear: left;'>
 
 <section class="content">
   <header>
