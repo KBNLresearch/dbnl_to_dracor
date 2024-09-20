@@ -5,7 +5,6 @@ from markupsafe import escape
 from urllib.parse import urlparse
 from lxml import etree
 import requests
-from tidylib import tidy_document
 
 
 app = Flask(__name__)
@@ -32,18 +31,31 @@ default_url = 'https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'
 
 def parse_xml(url=default_url, params=default_params):
     req = requests.get(url)
-
     parser = etree.XMLParser(remove_blank_text=True)
-
     data = req.content
 
-    data, errors = tidy_document(data, options={'indent-attributes':'yes', 'input-xml':'yes'})
+    #print(data.decode('utf-8'))
+    formatted_xml = ''
 
-    xml_data = etree.fromstring(data, parser=parser)
+    xml_data = etree.fromstring(data,
+                                parser=parser)
 
+    data = data.decode('utf-8')
+    ndata = ''
 
-    formatted_xml = etree.tostring(xml_data, pretty_print = True, encoding = 'utf-8').decode()
+    for l in data.split('\r'):
+        if not l.lstrip().startswith('<'):
+            ndata += ' ' + l.strip()
+        else:
+            if ndata.endswith('>'):
+                ndata += '\n' + l.strip()
+            else:
+                ndata += l.strip()
 
+    xml = etree.fromstring(ndata.encode())
+    formatted_xml = etree.tostring(xml,
+                                   pretty_print = True,
+                                   encoding = 'utf-8').decode()
     if params.get('pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
@@ -81,15 +93,18 @@ def hello_world():
         if not '=' in url.query:
             return render_template('index.html')
 
-        xml_id = escape(url.query.split('=')[-1])
+        try:
+            xml_id = escape(url.query.split('=')[-1])
+        except:
+            return render_template('index.html')
+
         to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
         xml_data = parse_xml(to_parse)
-        print(xml_data)
 
         return render_template('index.html', xml_data = xml_data)
 
-
-#if __name__ == '__main__':
-#    p = default_params
-#    p['pb'] = True
-#    parse_xml()
+if __name__ == '__main__':
+    p = default_params
+    p['pb'] = True
+    print(parse_xml())
+    app.run()

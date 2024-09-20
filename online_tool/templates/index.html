@@ -5,14 +5,30 @@
 {% endblock %}
 
 {% block content %}
-    <h2>CodeMirror XML Editor</h2>
+ <form method="post">
+
+    <label for="url">Link to DBNL input XML</label>
+    <input type="text" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input><br>
+
+    <input type="checkbox" id="pb" name="pb" value="pb">
+    <label for="pb"> "pb" elementen inclusief attributen pb.*?</label><br>
+
+    <input type="checkbox" id="hi" name="hi" value="hi">
+    <label for="hi"> "hi" elementen inclusief attributen, exclusief inhoud hi.*? + hi.*?\n.*? + hi</label><br>
+
+    <input type="checkbox" id="rend" name="rend" value="rend">
+    <label for="rend"> "rend" attributen inclusief waardes (' rend=".*?"')'''</label><br>
+
+    <input type="checkbox" id="xptr" name="xptr" value="xptr">
+    <label for="xptr"> elementen inclusief attributen xptr.*?</label><br>
+
+    <input type="submit" value="Process XML">
+  </form>
+
+
     <form id="xmlForm">
         <textarea id="xmlEditor"></textarea>
-        <button type="submit">Submit XML</button>
     </form>
-    <h3>Processed Output:</h3>
-    <div id="output"></div>
-
     <script>
         // Load the initial XML content from the Flask server
         const initialXML = `{{ xml_data | safe }}`;
@@ -46,10 +62,7 @@
         });
     </script>
 
-  <form method="post">
-    <label for="url">Link to DBNL input XML</label>
-    <input type="text" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input>
-    <input type="submit" value="Process XML">
-  </form>
+ 
+
 {% endblock %}
 
