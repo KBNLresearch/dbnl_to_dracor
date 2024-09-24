@@ -7,7 +7,7 @@
  <form method="post">
 
      <label for="url"><b>DBNL input XML: </b></label><br>
-     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input><br><br>
+     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='{{ opdict['url'] }}'></input><br><br>
 
     <input type="checkbox" id="pb" name="op" value="pb" {{'checked' if opdict['pb'] else ''}}>
     <label for="pb"> "pb" elementen inclusief attributen pb.*?</label><br>
