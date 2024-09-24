@@ -25,9 +25,6 @@ DEFAULT_PARAMS = {'remove_pb' : False,
                   'stats': 0, 
                   'url' : DEFAULT_URL}
 
-
-
-
 def extract_playlist(url=DEFAULT_URL):
     req = requests.get(url)
     parse = etree.XMLParser(remove_blank_text=True)
@@ -47,7 +44,7 @@ def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
                                    pretty_print = True,
                                    encoding = 'utf-8').decode()
     start_len = len(formatted_xml)
-    if params.get('pb'):
+    if params.get('remove_pb'):
         '''
         <pb> elementen inclusief attributen ('<pb.*?>')'''
         to_remove = set()
@@ -58,9 +55,11 @@ def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
         for elm in to_remove:
             etree.strip_tags(xml, elm)
 
-    if params.get('hi'):
+    if params.get('remove_hi'):
         '''
-        <hi> elementen inclusief attributen, exclusief inhoud ('<hi.*?>' + '<hi.*?\n.*?>' + '</hi>')'''
+        <hi> elementen inclusief attributen,
+        exclusief inhoud ('<hi.*?>' + '<hi.*?\n.*?>' + '</hi>')'''
+
         to_remove = set()
         for i in xml.iter():
             if str(i.tag).startswith('hi'):
@@ -69,7 +68,7 @@ def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
         for elm in to_remove:
             etree.strip_tags(xml, elm)
 
-    if params.get('rend'):
+    if params.get('remove_rend'):
         '''
         "rend" attributen inclusief waardes (' rend=".*?"')'''
         for elem in xml.iter():
@@ -102,6 +101,7 @@ def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
                 del elem.attrib['note']
 
 
+
     formatted_xml = etree.tostring(xml,
                                    pretty_print = True,
                                    encoding = 'utf-8').decode()
@@ -110,6 +110,43 @@ def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
 
     return formatted_xml, start_len - end_len
 
+
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    operation_params = DEFAULT_PARAMS.copy()
+    if request.method == 'GET':
+        return render_template('index.html', opdict=operation_params)
+
+    if request.method == 'POST':
+        todo = request.form.get('url')
+        operation = request.form.getlist('op')
+
+        for op in operation:
+            operation_params[op] = True
+
+        url = urlparse(todo)
+
+        if url.hostname is None:
+            return render_template('index.html', opdict=operation_params)
+
+        if not '=' in url.query:
+            return render_template('index.html', opdict=operation_params)
+
+        try:
+            xml_id = escape(url.query.split('=')[-1])
+        except:
+            return render_template('index.html', opdict=operation_params)
+
+        to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
+
+        xml_data, stats = parse_xml(to_parse, operation_params)
+
+        operation_params['stats'] = stats
+        operation_params['url'] = to_parse
+
+        return render_template('index.html',
+                               xml_data=xml_data,
+                               opdict=operation_params)
 
 @app.route("/batch", methods=['GET'])
 @app.route("/batch/", methods=['GET'])
@@ -141,43 +178,6 @@ def batch_operation() -> Response:
 
     return "Unknown operation error.", 500
 
-
-@app.route("/", methods=['GET', 'POST'])
-def index():
-    operation_params = DEFAULT_PARAMS.copy()
-    if request.method == 'GET':
-        return render_template('index.html', opdict=operation_params)
-
-    if request.method == 'POST':
-        todo = request.form.get('url')
-        operation = request.form.getlist('op')
-
-        for op in operation:
-            opdict[op] = True
-
-        url = urlparse(todo)
-
-        if url.hostname is None:
-            return render_template('index.html', opdict=operation_params)
-
-        if not '=' in url.query:
-            return render_template('index.html', opdict=operation_params)
-
-        try:
-            xml_id = escape(url.query.split('=')[-1])
-        except:
-            return render_template('index.html', opdict=operation_params)
-
-        to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
-
-        xml_data, stats = parse_xml(to_parse, operation_params)
-
-        opdict['stats'] = stats
-        opdict['url'] = to_parse
-
-        return render_template('index.html',
-                               xml_data=xml_data,
-                               opdict=operation_params)
 
 if __name__ == '__main__':
     app.run()

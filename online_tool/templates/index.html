@@ -5,29 +5,20 @@
 
 {% block content %}
  <form method="post">
-
      <label for="url"><b>DBNL input XML: </b></label><br>
      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='{{ opdict['url'] }}'></input><br><br>
-
-    <input type="checkbox" id="pb" name="op" value="pb" {{'checked' if opdict['pb'] else ''}}>
+    <input type="checkbox" id="remove_pb" name="op" value="remove_pb" {{'checked' if opdict['remove_pb'] else ''}}>
     <label for="pb"> "pb" elementen inclusief attributen pb.*?</label><br>
-
-    <input type="checkbox" id="hi" name="op" value="hi" {{'checked' if opdict['hi'] else ''}}>
+    <input type="checkbox" id="remove_hi" name="op" value="remove_hi" {{'checked' if opdict['remove_hi'] else ''}}>
     <label for="hi"> "hi" elementen inclusief attributen, exclusief inhoud hi.*? + hi.*?\n.*? + hi</label><br>
-
-    <input type="checkbox" id="rend" name="op" value="rend" {{'checked' if opdict['rend'] else ''}}>
-    <label for="rend"> "rend" attributen inclusief waardes (' rend=".*?"')'''</label><br>
-
-    <input type="checkbox" id="xptr" name="op" value="xptr" {{'checked' if opdict['xptr'] else ''}}>
+    <input type="checkbox" id="remove_rend" name="op" value="remove_rend" {{'checked' if opdict['remove_rend'] else ''}}>
+    <label for="rend"> "rend" attributen inclusief waardes rend=".*?</label><br>
+    <input type="checkbox" id="remove_xptr" name="op" value="remove_xptr" {{'checked' if opdict['remove_xptr'] else ''}}>
     <label for="xptr"> elementen inclusief attributen xptr.*?</label><br>
-
-    <input type="checkbox" id="note" name="op" value="note" {{'checked' if opdict['note'] else ''}}>
+    <input type="checkbox" id="remove_note" name="op" value="remove_note" {{'checked' if opdict['remove_note'] else ''}}>
     <label for="note"> elementen inclusief attributen note.*?</label><br><br>
-
     <input type="submit" value="Parse XML" style='margin-left: 200px;'><br>
   </form>
-
-
 
   {% if xml_data %}
   <br>
@@ -51,9 +42,5 @@
         });
         editor.setValue(initialXML);
     </script>
-
   {% endif %}
- 
-
 {% endblock %}
-
