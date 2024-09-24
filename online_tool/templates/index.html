@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+ <form method="post">
+
+     <label for="url"><b>DBNL input XML: </b></label><br>
+     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01'></input><br><br>
+
+    <input type="checkbox" id="pb" name="op" value="pb" {{'checked' if opdict['pb'] else ''}}>
+    <label for="pb"> "pb" elementen inclusief attributen pb.*?</label><br>
+
+    <input type="checkbox" id="hi" name="op" value="hi" {{'checked' if opdict['hi'] else ''}}>
+    <label for="hi"> "hi" elementen inclusief attributen, exclusief inhoud hi.*? + hi.*?\n.*? + hi</label><br>
+
+    <input type="checkbox" id="rend" name="op" value="rend" {{'checked' if opdict['rend'] else ''}}>
+    <label for="rend"> "rend" attributen inclusief waardes (' rend=".*?"')'''</label><br>
+
+    <input type="checkbox" id="xptr" name="op" value="xptr" {{'checked' if opdict['xptr'] else ''}}>
+    <label for="xptr"> elementen inclusief attributen xptr.*?</label><br><br>
+
+    <input type="checkbox" id="note" name="op" value="note" {{'checked' if opdict['note'] else ''}}>
+    <label for="note"> elementen inclusief attributen note.*?</label><br><br>
+
+    <input type="submit" value="Parse XML" style='margin-left: 200px;'><br>
+  </form>
+
+
+
+  {% if xml_data %}
+  <br>
+  Removed <font style='color: red'> {{ opdict['stats'] }} </font> bytes.<br><br>
+
+  <form id="xmlForm">
+        <textarea id="xmlEditor"></textarea>
+    </form>
+    <script>
+        const initialXML = `{{ xml_data | safe }}`;
+        const editor = CodeMirror.fromTextArea(document.getElementById('xmlEditor'), {
+            theme: 'default', 
+            readOnly: true,
+            cursorBlinkRate: -1,
+            mode: "xml",
+            matchTags: {bothTags: true},
+            styleActiveLine: true,
+            lineNumbers: true,
+            indentWithTabs: true,
+            indentUnit: 4,
+        });
+        editor.setValue(initialXML);
+    </script>
+
+  {% endif %}
+ 
+
+{% endblock %}
+

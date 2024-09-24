@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+online_tool/.*.swp
+online_tool/__pycache__/
 __pycache__/
 *.py[cod]
 *$py.class

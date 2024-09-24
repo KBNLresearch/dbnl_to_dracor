@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<title>DBNL to DACOR tool</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMirror XML Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/xml-hint.js"></script>
+
+
+    <!--
+
+
+
+        --!>
+
+
+        <style>
+        body, html {
+            height: 100%;
+            background-color: rgb(33, 37, 41);
+            color: rgb(255, 255, 255);
+        }
+        textarea {
+            margin-bottom: 10px;
+            resize: vertical;
+            max-height: auto;
+            min-height: 40%;
+        }
+        .CodeMirror {
+            height: 40%;
+            width: 70%;
+        }
+        .content {
+            background-color: rgb(255, 255, 255);
+            border-radius: 25px;
+            color: rgb(33, 37, 41);
+            border: 2px solid #73AD21;
+            padding: 10px;
+            width: auto;
+            height: auto;
+        }
+    </style>
+</head>
+<nav>
+    <a href='/' style='text-decoration: none; float: left;'>
+    <img src="https://dracor.org/maskable_icon.png" style='float: left; width: 120px; padding: 20px;'>
+  <h1 style='float: left;'>DBNL2DRACOR</h1>
+    </a>
+    <a href='https://www.dbnl.org/' style='text-decoration: none'>
+    <img src="https://www.dbnl.org/images/DBNL-logo-compact-diapositief-RGB.svg" style='float: right; width: 120px; padding: 20px;'>
+    </a>
+
+</nav>
+
+<br style='clear: left;'>
+
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>
+
+</html>
