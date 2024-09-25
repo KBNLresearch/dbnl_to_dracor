@@ -23,6 +23,7 @@ DEFAULT_PARAMS = {'remove_pb' : False,
                   'remove_rend' : False,
                   'remove_xptr' : False,
                   'stats': 0, 
+                  'mode' : 'remove',
                   'url' : DEFAULT_URL}
 
 
@@ -144,8 +145,10 @@ def index():
     if not 'extract' in request.path:
         xml_data, stats = parse_xml(fetch_xmldata(dbnl_url), operation_params)
         operation_params['stats'] = stats
+        operation_params['mode'] = 'remove'
     else:
         xml_data = extract_speakerlist(fetch_xmldata(dbnl_url))
+        operation_params['mode'] = 'extract'
 
     return render_template('index.html',
                            xml_data=xml_data,
