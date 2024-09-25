@@ -3,6 +3,8 @@
 import requests
 import pprint
 
+from parse_dbnl_input import parse_fulltext
+
 from flask import (Flask,
                   jsonify,
                   render_template,
@@ -36,9 +38,12 @@ def fetch_xmldata(url) -> etree:
 
 
 def extract_speakerlist(xml):
-    for item in xml.iter():
-        print(item.attrib, item.tag, item.text)
+    out = "<xml>\n"
+    for sp in list(parse_fulltext(xml)[1]):
+        out += f"\t<speaker>{sp}</speaker>\n"
 
+    out += "</xml>"
+    return out
 
 def parse_xml(xml, params):
     formatted_xml = etree.tostring(xml,
@@ -186,4 +191,4 @@ def batch_operation() -> Response:
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

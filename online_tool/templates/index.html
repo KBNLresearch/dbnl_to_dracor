@@ -111,7 +111,10 @@
 
   {% if xml_data %}
   <br>
+
+  {% if opdict['mode'] == 'remove' %}
   Removed <font style='color: red'> {{ opdict['stats'] }} </font> bytes.<br><br>
+  {% endif %}
 
   <form id="xmlForm">
         <textarea id="xmlEditor"></textarea>
