@@ -5,8 +5,21 @@
 
 {% block content %}
 
-<p><h2>Please select operation: </h2><br>
-<form>
+<p>
+<h2>What is this?</h2>
+DBNL2DraCor transforms xml from DBNL to more DraCor friendly output.<br>
+Output can be used to create new DutchDraCor files.<br>
+Batch conversion and extraction supported like so:
+<pre style='color: green; font-color: white; margin-left: 40px;'>
+curl -s https://www.kbresearch.nl/dbnl2dracor/batch/?mode=remove&id=croi003gewa01 > croi003gewa01.xml
+curl -s https://www.kbresearch.nl/dbnl2dracor/batch/?mode=remove&id=eemb001haer01  > eemb001haer01.xml
+curl -s https://www.kbresearch.nl/dbnl2dracor/batch/?mode=extract&id=croi003gewa01 > croi003gewa01_speakers.xml
+curl -s https://www.kbresearch.nl/dbnl2dracor/batch/?mode=extract&id=eemb001haer01  > eemb001haer01_speakers.xml
+</pre>
+<br>
+
+<h3>Please select operation: </h3>
+<form style='margin-left: 40px;'>
     <input type="radio" id="remove" name="action" value="remove" {{'checked' if opdict['mode'] == 'remove' else '' }}>
     <label for="remove">Remove unwanted xml sections.</label><br>
     <input type="radio" id="extract" name="action" value="extract" {{'checked' if opdict['mode'] == 'extract' else '' }}>
@@ -15,7 +28,6 @@
 </p>
 
 <div id="content-div" class="toggle-div visible">
-
     {% if opdict['mode'] == 'remove' %}
      <form method="post" action='/'>
      <label for="url"><b>DBNL input XML: </b></label><br>
@@ -63,7 +75,7 @@
     <label for="xptr"> elementen inclusief attributen xptr.*?</label><br>
     <input type="checkbox" id="remove_note" name="op" value="remove_note" {{'checked' if opdict['remove_note'] else ''}}>
     <label for="note"> elementen inclusief attributen note.*?</label><br><br>
-    <input type="submit" value="Parse XML" style='margin-left: 200px;'><br>
+    <input type="submit" value="Remove unwanted xml" style='margin-left: 200px;'><br>
   </form>
 </div>
 
@@ -105,10 +117,6 @@
     // Initialize with the form content
     contentDiv.classList.add('visible');
 </script>
-
-
-
-
   {% if xml_data %}
   <br>
 
