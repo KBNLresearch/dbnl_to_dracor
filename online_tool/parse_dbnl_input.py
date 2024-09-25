@@ -27,24 +27,10 @@ def print_dracor_xml(data: dict) -> None:
 
 def speaker_filter(speakerlist: set, newspeaker: str) -> set | tuple:
     newspeaker = escape(newspeaker)
-
-    '''
-    #Realy small speakernames are allowed.
-    if len(newspeaker) < 2:
-        return speakerlist
-    '''
-    
     if newspeaker in speakerlist:
         for speaker in speakerlist:
             if newspeaker == speaker:
                 return speakerlist
-
-    '''
-    #Disable Levenshtein for now.
-    for speaker in speakerlist:
-        if distance(speaker, newspeaker) < LEVENSTEIN_SPEAKER:
-            return newspeaker, speaker
-    '''
     speakerlist.add(newspeaker)
     return speakerlist
 
