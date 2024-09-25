@@ -25,21 +25,21 @@ DEFAULT_PARAMS = {'remove_pb' : False,
                   'stats': 0, 
                   'url' : DEFAULT_URL}
 
-def extract_playlist(url=DEFAULT_URL):
-    req = requests.get(url)
-    parse = etree.XMLParser(remove_blank_text=True)
-    data = req.content
-    xml = etree.fromstring(data,parser=parse)
 
-    for item in xml.iter():
-        print(item.attrib, item.tag, item.text)
-
-
-def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
+def fetch_xmldata(url) -> etree:
     req = requests.get(url)
     parser = etree.XMLParser(remove_blank_text=True)
     data = req.content
     xml = etree.fromstring(data, parser=parser)
+    return xml
+
+
+def extract_speakerlist(xml):
+    for item in xml.iter():
+        print(item.attrib, item.tag, item.text)
+
+
+def parse_xml(xml, params):
     formatted_xml = etree.tostring(xml,
                                    pretty_print = True,
                                    encoding = 'utf-8').decode()
@@ -110,43 +110,46 @@ def parse_xml(url=DEFAULT_URL, params=DEFAULT_PARAMS):
 
     return formatted_xml, start_len - end_len
 
-
+@app.route("/extract", methods=['POST'])
+@app.route("/extract/", methods=['POST'])
 @app.route("/", methods=['GET', 'POST'])
 def index():
     operation_params = DEFAULT_PARAMS.copy()
     if request.method == 'GET':
         return render_template('index.html', opdict=operation_params)
 
-    if request.method == 'POST':
-        todo = request.form.get('url')
-        operation = request.form.getlist('op')
-
-        for op in operation:
-            operation_params[op] = True
-
-        url = urlparse(todo)
-
-        if url.hostname is None:
-            return render_template('index.html', opdict=operation_params)
-
-        if not '=' in url.query:
-            return render_template('index.html', opdict=operation_params)
-
-        try:
-            xml_id = escape(url.query.split('=')[-1])
-        except:
-            return render_template('index.html', opdict=operation_params)
-
-        to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
-
-        xml_data, stats = parse_xml(to_parse, operation_params)
-
         operation_params['stats'] = stats
-        operation_params['url'] = to_parse
+    todo = request.form.get('url')
+    operation = request.form.getlist('op')
 
-        return render_template('index.html',
-                               xml_data=xml_data,
-                               opdict=operation_params)
+    for op in operation:
+        operation_params[op] = True
+
+    url = urlparse(todo)
+
+    if url.hostname is None:
+        return render_template('index.html', opdict=operation_params)
+
+    if not '=' in url.query:
+        return render_template('index.html', opdict=operation_params)
+
+    try:
+        xml_id = escape(url.query.split('=')[-1])
+    except:
+        return render_template('index.html', opdict=operation_params)
+
+    dbnl_url = f'https://www.dbnl.org/nieuws/xml.php?id={xml_id}'
+    operation_params['url'] = dbnl_url
+
+    if not 'extract' in request.path:
+        xml_data, stats = parse_xml(fetch_xmldata(dbnl_url), operation_params)
+        operation_params['stats'] = stats
+    else:
+        xml_data = extract_speakerlist(fetch_xmldata(dbnl_url))
+
+    return render_template('index.html',
+                           xml_data=xml_data,
+                           opdict=operation_params)
 
 @app.route("/batch", methods=['GET'])
 @app.route("/batch/", methods=['GET'])
@@ -173,7 +176,7 @@ def batch_operation() -> Response:
     operation = request.args.get('operation') or 'remove'
     if operation == 'remove': 
         to_parse = f'https://www.dbnl.org/nieuws/xml.php?id={todo}'
-        xml_data, stats = parse_xml(to_parse, operation_params)
+        xml_data, stats = parse_xml(fetch_xmldata(to_parse), operation_params)
         return Response(xml_data, mimetype='text/xml')
 
     return "Unknown operation error.", 500
