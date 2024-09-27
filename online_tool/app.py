@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 
+"""Web-tool DBNL2DraCor app.py
+
+Willem Jan Faber
+
+Copyright 2024, KB/National Library of the Netherlands
+"""
+
+
 from urllib.parse import urlparse
 
 import requests
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, Response, render_template, request
 from lxml import etree
 from markupsafe import escape
 
@@ -16,7 +24,7 @@ DEFAULT_URL = "https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01"
 
 # Change this if you deploy elsewhere.
 TOOL_URL = "http://127.0.0.1:5000"
-#TOOL_URL = "https://www.kbresearch.nl/"
+# TOOL_URL = "https://www.kbresearch.nl/"
 
 DEFAULT_PARAMS = {
     "remove_pb": False,
@@ -27,7 +35,7 @@ DEFAULT_PARAMS = {
     "stats": 0,
     "mode": "remove",
     "url": DEFAULT_URL,
-    "tool_url" : TOOL_URL,
+    "tool_url": TOOL_URL,
 }
 
 
@@ -51,7 +59,9 @@ def extract_speakerlist(xml):
 
 
 def parse_xml(xml, params):
-    formatted_xml = etree.tostring(xml, pretty_print=True, encoding="utf-8").decode()
+    formatted_xml = etree.tostring(xml,
+                                   pretty_print=True,
+                                   encoding="utf-8").decode()
     start_len = len(formatted_xml)
     if params.get("remove_pb"):
         to_remove = set()
@@ -99,7 +109,9 @@ def parse_xml(xml, params):
             if "note" in elem.attrib:
                 del elem.attrib["note"]
 
-    formatted_xml = etree.tostring(xml, pretty_print=True, encoding="utf-8").decode()
+    formatted_xml = etree.tostring(xml,
+                                   pretty_print=True,
+                                   encoding="utf-8").decode()
 
     end_len = len(formatted_xml)
 
@@ -113,8 +125,6 @@ def index():
     operation_params = DEFAULT_PARAMS.copy()
     if request.method == "GET":
         return render_template("index.html", opdict=operation_params)
-
-        operation_params["stats"] = stats
     todo = request.form.get("url")
     operation = request.form.getlist("op")
 
@@ -126,18 +136,19 @@ def index():
     if url.hostname is None:
         return render_template("index.html", opdict=operation_params)
 
-    if not "=" in url.query:
+    if "=" not in url.query:
         return render_template("index.html", opdict=operation_params)
 
     try:
         xml_id = escape(url.query.split("=")[-1])
-    except:
+    except Exception as err:
+        operation_params['err'] = err
         return render_template("index.html", opdict=operation_params)
 
     dbnl_url = f"https://www.dbnl.org/nieuws/xml.php?id={xml_id}"
     operation_params["url"] = dbnl_url
 
-    if not "extract" in request.path:
+    if "extract" not in request.path:
         xml_data, stats = parse_xml(fetch_xmldata(dbnl_url), operation_params)
         operation_params["stats"] = stats
         operation_params["mode"] = "remove"
@@ -145,7 +156,9 @@ def index():
         xml_data = extract_speakerlist(fetch_xmldata(dbnl_url))
         operation_params["mode"] = "extract"
 
-    return render_template("index.html", xml_data=xml_data, opdict=operation_params)
+    return render_template("index.html",
+                           xml_data=xml_data,
+                           opdict=operation_params)
 
 
 @app.route("/batch", methods=["GET"])
@@ -176,14 +189,15 @@ def batch_operation() -> Response:
 
     if operation == "remove":
         try:
-            xml_data, stats = parse_xml(fetch_xmldata(to_parse), operation_params)
+            xml_data, stats = parse_xml(fetch_xmldata(to_parse),
+                                        operation_params)
             return Response(xml_data, mimetype="text/xml")
         except Exception:
             return "Fatal exception, parse_xml failed.", 500
 
     else:
         try:
-            xml_data  = extract_speakerlist(fetch_xmldata(to_parse))
+            xml_data = extract_speakerlist(fetch_xmldata(to_parse))
             return Response(xml_data, mimetype="text/xml")
         except Exception:
             return "Fatal exception, extract_speakerlist failed.", 500

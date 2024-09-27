@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""Web-tool DBNL2DraCor parse_dbnl_input.py
+
+Willem Jan Faber.
+
+Copyright 2024, KB/National Library of the Netherlands.
+"""
 
 def escape(str_xml: str):
     str_xml = str_xml.replace("&", "&amp;")
