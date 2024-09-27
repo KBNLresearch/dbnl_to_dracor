@@ -43,12 +43,9 @@ def extract_speakerlist(xml):
 
 
 def parse_xml(xml, params):
-    formatted_xml = etree.tostring(
-        xml, pretty_print=True, encoding="utf-8").decode()
+    formatted_xml = etree.tostring(xml, pretty_print=True, encoding="utf-8").decode()
     start_len = len(formatted_xml)
     if params.get("remove_pb"):
-        """
-        <pb> elementen inclusief attributen ('<pb.*?>')"""
         to_remove = set()
         for i in xml.iter():
             if str(i.tag).startswith("pb"):
@@ -58,10 +55,6 @@ def parse_xml(xml, params):
             etree.strip_tags(xml, elm)
 
     if params.get("remove_hi"):
-        """
-        <hi> elementen inclusief attributen,
-        exclusief inhoud ('<hi.*?>' + '<hi.*?\n.*?>' + '</hi>')"""
-
         to_remove = set()
         for i in xml.iter():
             if str(i.tag).startswith("hi"):
@@ -71,15 +64,11 @@ def parse_xml(xml, params):
             etree.strip_tags(xml, elm)
 
     if params.get("remove_rend"):
-        """
-        "rend" attributen inclusief waardes (' rend=".*?"')"""
         for elem in xml.iter():
             if "rend" in elem.attrib:
                 del elem.attrib["rend"]
 
     if params.get("remove_xptr"):
-        """
-        <xptr> elementen inclusief attributen ('<xptr.*?>')"""
         to_remove = set()
         for i in xml.iter():
             if str(i.tag).startswith("xptr"):
@@ -90,6 +79,7 @@ def parse_xml(xml, params):
 
     if params.get("remove_note"):
         to_remove = set()
+
         for i in xml.iter():
             if str(i.tag).startswith("note"):
                 to_remove.add(str(i.tag))
@@ -101,8 +91,7 @@ def parse_xml(xml, params):
             if "note" in elem.attrib:
                 del elem.attrib["note"]
 
-    formatted_xml = etree.tostring(
-        xml, pretty_print=True, encoding="utf-8").decode()
+    formatted_xml = etree.tostring(xml, pretty_print=True, encoding="utf-8").decode()
 
     end_len = len(formatted_xml)
 
@@ -174,12 +163,16 @@ def batch_operation() -> Response:
         return "Missing 'todo' argument. Use /batch/?todo=heyn003vrie01", 400
 
     operation = request.args.get("operation") or "remove"
+    to_parse = f"https://www.dbnl.org/nieuws/xml.php?id={todo}"
+
     if operation == "remove":
-        to_parse = f"https://www.dbnl.org/nieuws/xml.php?id={todo}"
         xml_data, stats = parse_xml(fetch_xmldata(to_parse), operation_params)
         return Response(xml_data, mimetype="text/xml")
+    else:
+        xml_data  = extract_speakerlist(fetch_xmldata(to_parse))
+        return Response(xml_data, mimetype="text/xml")
 
-    return "Unknown operation error.", 500
+    return "You should not be here.", 500
 
 
 if __name__ == "__main__":
