@@ -13,6 +13,11 @@ app = Flask(__name__)
 
 DEFAULT_URL = "https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01"
 
+
+# Change this if you deploy elsewhere.
+TOOL_URL = "http://127.0.0.1:5000"
+#TOOL_URL = "https://www.kbresearch.nl/"
+
 DEFAULT_PARAMS = {
     "remove_pb": False,
     "remove_hi": False,
@@ -22,14 +27,18 @@ DEFAULT_PARAMS = {
     "stats": 0,
     "mode": "remove",
     "url": DEFAULT_URL,
+    "tool_url" : TOOL_URL,
 }
 
 
 def fetch_xmldata(url) -> etree:
-    req = requests.get(url)
-    parser = etree.XMLParser(remove_blank_text=True)
-    data = req.content
-    xml = etree.fromstring(data, parser=parser)
+    try:
+        req = requests.get(url)
+        parser = etree.XMLParser(remove_blank_text=True)
+        data = req.content
+        xml = etree.fromstring(data, parser=parser)
+    except Exception as err:
+        raise err
     return xml
 
 
@@ -37,7 +46,6 @@ def extract_speakerlist(xml):
     out = "<xml>\n"
     for sp in list(parse_fulltext(xml)[1]):
         out += f"\t<speaker>{sp}</speaker>\n"
-
     out += "</xml>"
     return out
 
@@ -146,8 +154,8 @@ def batch_operation() -> Response:
     """
     For batch handling use this, default operation == remove.
 
-    /batch/?todo=groo001adam01 == /batch/?operation=remove&todo=groo001adam01
-    /batch/?operation=playerslist&todo=groo001adam01
+    /batch/?id=groo001adam01 == /batch/?mode=remove&id=groo001adam01
+    /batch/?mode=playerslist&id=groo001adam01
 
     We will handle one xml at the time, so the response is one xml.
     """
@@ -158,19 +166,27 @@ def batch_operation() -> Response:
         if isinstance(operation_params[key], bool):
             operation_params[key] = not operation_params[key]
 
-    todo = request.args.get("todo")
+    print(request.args)
+    todo = request.args.get("id")
     if not todo:
         return "Missing 'todo' argument. Use /batch/?todo=heyn003vrie01", 400
 
-    operation = request.args.get("operation") or "remove"
+    operation = request.args.get("mode") or "remove"
     to_parse = f"https://www.dbnl.org/nieuws/xml.php?id={todo}"
 
     if operation == "remove":
-        xml_data, stats = parse_xml(fetch_xmldata(to_parse), operation_params)
-        return Response(xml_data, mimetype="text/xml")
+        try:
+            xml_data, stats = parse_xml(fetch_xmldata(to_parse), operation_params)
+            return Response(xml_data, mimetype="text/xml")
+        except Exception:
+            return "Fatal exception, parse_xml failed.", 500
+
     else:
-        xml_data  = extract_speakerlist(fetch_xmldata(to_parse))
-        return Response(xml_data, mimetype="text/xml")
+        try:
+            xml_data  = extract_speakerlist(fetch_xmldata(to_parse))
+            return Response(xml_data, mimetype="text/xml")
+        except Exception:
+            return "Fatal exception, extract_speakerlist failed.", 500
 
     return "You should not be here.", 500
 
