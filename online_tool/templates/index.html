@@ -11,10 +11,10 @@ DBNL2DraCor transforms xml from DBNL to more DraCor friendly output.<br>
 Output can be used to create new DutchDraCor files.<br>
 Batch conversion and extraction supported like so:
 <pre style='color: green; font-color: white; margin-left: 40px;'>
-curl -s {{ opdict['tool_url'] }}/batch/?mode=remove&id=croi003gewa01 > croi003gewa01.xml
-curl -s {{ opdict['tool_url'] }}//batch/?mode=remove&id=eemb001haer01  > eemb001haer01.xml
-curl -s {{ opdict['tool_url'] }}//batch/?mode=extract&id=croi003gewa01 > croi003gewa01_speakers.xml
-curl -s {{ opdict['tool_url'] }}//batch/?mode=extract&id=eemb001haer01  > eemb001haer01_speakers.xml
+curl -s "{{ opdict['tool_url'] }}/batch/?mode=remove&id=croi003gewa01" > croi003gewa01.xml
+curl -s "{{ opdict['tool_url'] }}/batch/?mode=remove&id=eemb001haer01"  > eemb001haer01.xml
+curl -s "{{ opdict['tool_url'] }}/batch/?mode=extract&id=croi003gewa01" > croi003gewa01_speakers.xml
+curl -s "{{ opdict['tool_url'] }}/batch/?mode=extract&id=eemb001haer01"  > eemb001haer01_speakers.xml
 </pre>
 <br>
 
