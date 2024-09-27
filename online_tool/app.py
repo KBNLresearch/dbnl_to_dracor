@@ -149,12 +149,27 @@ def index():
     operation_params["url"] = dbnl_url
 
     if "extract" not in request.path:
-        xml_data, stats = parse_xml(fetch_xmldata(dbnl_url), operation_params)
-        operation_params["stats"] = stats
-        operation_params["mode"] = "remove"
+        try:
+            xml_data, stats = parse_xml(fetch_xmldata(dbnl_url), operation_params)
+            operation_params["stats"] = stats
+            operation_params["mode"] = "remove"
+        except Exception as err:
+            operation_params['err'] = err
+            return render_template("index.html",
+                                   xml_data=xml_data,
+                                   opdict=operation_params)
+
+
     else:
-        xml_data = extract_speakerlist(fetch_xmldata(dbnl_url))
-        operation_params["mode"] = "extract"
+        try:
+            xml_data = extract_speakerlist(fetch_xmldata(dbnl_url))
+            operation_params["mode"] = "extract"
+        except Exception as err:
+            operation_params['err'] = err
+            return render_template("index.html",
+                                   xml_data=xml_data,
+                                   opdict=operation_params)
+
 
     return render_template("index.html",
                            xml_data=xml_data,
@@ -206,4 +221,4 @@ def batch_operation() -> Response:
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
