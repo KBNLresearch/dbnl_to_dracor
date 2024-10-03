@@ -29,7 +29,7 @@ curl -s "{{ opdict['tool_url'] }}/batch/?mode=extract&id=eemb001haer01"  > eemb0
 
 <div id="content-div" class="toggle-div visible">
     {% if opdict['mode'] == 'remove' %}
-     <form method="post" action='/'>
+     <form method="post" action='{{opdict['tool_url']}}>
      <label for="url"><b>DBNL input XML: </b></label><br>
      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='{{ opdict['url'] }}'></input><br><br>
     <input type="checkbox" id="remove_pb" name="op" value="remove_pb" {{'checked' if opdict['remove_pb'] else ''}}>
@@ -45,7 +45,7 @@ curl -s "{{ opdict['tool_url'] }}/batch/?mode=extract&id=eemb001haer01"  > eemb0
     <input type="submit" value="Remove unwanted xml" style='margin-left: 200px;'><br>
   </form>
   {% else %}
-    <form method="post" action='/extract'>
+    <form method="post" action='{{opdict['tool_url']}}/extract'>
        <label for="url"><b>DBNL input XML: </b></label><br>
        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='{{ opdict['url'] }}'></input><br><br>
        <input type="submit" value="Extract speakerlist" style='margin-left: 200px;'><br>
@@ -54,7 +54,7 @@ curl -s "{{ opdict['tool_url'] }}/batch/?mode=extract&id=eemb001haer01"  > eemb0
 </div>
 
 <div id="extract-content" class="hidden-content">
-  <form method="post" action='/extract'>
+  <form method="post" action='{{opdict['tool_url']}}/extract'>
    <label for="url"><b>DBNL input XML: </b></label><br>
    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='{{ opdict['url'] }}'></input><br><br>
    <input type="submit" value="Extract speakerlist" style='margin-left: 200px;'><br>
@@ -62,7 +62,7 @@ curl -s "{{ opdict['tool_url'] }}/batch/?mode=extract&id=eemb001haer01"  > eemb0
 </div>
 
 <div id="form-content" class="hidden-content">
- <form method="post" action='/'>
+ <form method="post" action='{{opdict['tool_url']}}'>
      <label for="url"><b>DBNL input XML: </b></label><br>
      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type="text" size="60" name="url" value='{{ opdict['url'] }}'></input><br><br>
     <input type="checkbox" id="remove_pb" name="op" value="remove_pb" {{'checked' if opdict['remove_pb'] else ''}}>
