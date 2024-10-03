@@ -15,12 +15,9 @@ from flask import Flask, Response, render_template, request
 from lxml import etree
 from markupsafe import escape
 
-from parse_dbnl_input import parse_fulltext
-
 app = Flask(__name__)
 
-DEFAULT_URL = "https://www.dbnl.org/nieuws/xml.php?id=vond001gysb01"
-
+DEFAULT_URL = "https://www.dbnl.org/nieuws/xml.php?id=vos_002kluc01"
 
 # Change this if you deploy elsewhere.
 TOOL_URL = "http://127.0.0.1:5000"
@@ -49,13 +46,6 @@ def fetch_xmldata(url) -> etree:
         raise err
     return xml
 
-
-def extract_speakerlist(xml):
-    out = "<xml>\n"
-    for sp in list(parse_fulltext(xml)[1]):
-        out += f"\t<speaker>{sp}</speaker>\n"
-    out += "</xml>"
-    return out
 
 
 def parse_xml(xml, params):
@@ -118,6 +108,30 @@ def parse_xml(xml, params):
     return formatted_xml, start_len - end_len
 
 
+def extract_speakerlist(xml):
+    operation_params = DEFAULT_PARAMS.copy()
+
+    for key in operation_params:
+        if isinstance(operation_params[key], bool):
+            operation_params[key] = not operation_params[key]
+
+    xml, stats = parse_xml(xml, operation_params)
+    xml = etree.fromstring(xml)
+
+    speakers = set()
+
+    for item in xml.iter():
+        if item.tag == 'speaker':
+            if item.text and not item.text is None:
+                speakers.add(item.text.strip())
+
+    xml = '<xml>\n'
+    for speaker in speakers:
+        xml += f'\t<speaker>{speaker}</speaker>\n'
+    xml += '</xml>\n'
+    return xml
+
+
 @app.route("/extract", methods=["POST"])
 @app.route("/extract/", methods=["POST"])
 @app.route("/", methods=["GET", "POST"])
@@ -174,6 +188,7 @@ def index():
     return render_template("index.html",
                            xml_data=xml_data,
                            opdict=operation_params)
+
 
 
 @app.route("/batch", methods=["GET"])
